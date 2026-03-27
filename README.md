@@ -24,91 +24,81 @@ Testing the C Program for the desired output.
 # PROGRAM:
 
 ## C Program that illustrate communication between two process using unnamed pipes using Linux API system calls
-
 ```
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h> 
-#include <sys/stat.h> 
-#include <string.h> 
-#include <fcntl.h> 
-#include <unistd.h>
-#include <sys/wait.h>
-
-void server(int, int); 
-void client(int, int); 
-
-int main() { 
-    int p1[2], p2[2], pid; 
-    pipe(p1); 
-    pipe(p2); 
-    pid = fork(); 
-
-    if (pid == 0) { 
-        // Child process - Server
-        close(p1[1]); // Close write end of pipe1
-        close(p2[0]); // Close read end of pipe2
-        server(p1[0], p2[1]); 
-        exit(0);
-    } 
-
-    // Parent process - Client
-    close(p1[0]); // Close read end of pipe1
-    close(p2[1]); // Close write end of pipe2
-    client(p1[1], p2[0]); 
-    
-    wait(NULL); // Wait for child process to finish
-    return 0; 
+#include<stdlib.h>
+#include<sys/types.h> 
+#include<sys/stat.h> 
+#include<string.h> 
+#include<fcntl.h> 
+#include<unistd.h>
+#include<sys/wait.h>
+void server(int,int); 
+void client(int,int); 
+int main() 
+{ 
+int p1[2],p2[2],pid, *waits; 
+pipe(p1); 
+pipe(p2); 
+pid=fork(); 
+if(pid==0) { 
+close(p1[1]); 
+close(p2[0]); 
+server(p1[0],p2[1]); return 0;
+ } 
+close(p1[0]); 
+close(p2[1]); 
+client(p1[1],p2[0]); 
+wait(waits); 
+return 0; 
 } 
-
-void server(int rfd, int wfd) { 
-    int n; 
-    char fname[2000]; 
-    char buff[2000];
-
-    // Read filename from pipe
-    n = read(rfd, fname, 2000);
-    fname[n] = '\0';
-
-    // Open the file
-    int fd = open(fname, O_RDONLY);
-    if (fd < 0) { 
-        write(wfd, "can't open", 9); 
-    } else { 
-        n = read(fd, buff, 2000); 
-        write(wfd, buff, n); 
-        close(fd);
-    } 
+void server(int rfd,int wfd) 
+{ 
+int i,j,n; 
+char fname[2000]; 
+char buff[2000];
+n=read(rfd,fname,2000);
+fname[n]='\0';
+int fd=open(fname,O_RDONLY);
+sleep(10); 
+if(fd<0) 
+write(wfd,"can't open",9); 
+else 
+n=read(fd,buff,2000); 
+write(wfd,buff,n); 
 }
-
-void client(int wfd, int rfd) {
-    int n; 
-    char fname[2000];
-    char buff[2000];
-
-    // Provide input filename
-    scanf("%s", fname);
-
-    // Send filename to server
-    write(wfd, fname, 2000);
-
-    // Read file contents from server
-    n = read(rfd, buff, 2000);
-    buff[n] = '\0';
-
-    // Print file contents
-    write(1, buff, n);
+void client(int wfd,int rfd) {
+int i,j,n; char fname[2000];
+char buff[2000];
+printf("ENTER THE FILE NAME :");
+scanf("%s",fname);
+sleep(10);
+write(wfd,fname,2000);
+n=read(rfd,buff,2000);
+buff[n]='\0';
+printf("THE RESULTS OF CLIENTS ARE ...... \n"); write(1,buff,n);
 }
-
 ```
-
-
-
 ## OUTPUT
+
+![image](https://github.com/user-attachments/assets/6ef9b522-0c95-47f2-bae0-dede19691231)
 
 
 ## C Program that illustrate communication between two process using named pipes using Linux API system calls
-<img width="600" height="227" alt="image" src="https://github.com/user-attachments/assets/f1e63e39-473b-452f-9614-9676394c9a36" />
+
+```
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+int main(){
+int res = mkfifo("/tmp/my_fifo", 0777);
+if (res == 0) printf("FIFO created\n");
+exit(EXIT_SUCCESS);
+}
+```
+## OUTPUT
+![image](https://github.com/user-attachments/assets/400e4210-4b4a-4c37-86f8-45559d0f2c18)
 
 # RESULT:
 The program is executed successfully.
